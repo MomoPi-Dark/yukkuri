@@ -3,9 +3,11 @@ const {
   MessageEmbed,
   MessageButton,
   MessageActionRow,
-  Interaction
+  CommandInteraction,
+  MessageSelectMenu,
 } = require("discord.js");
 const Mal = require("mal-scraper");
+const GetRefrense = require("../mal/getRefrense");
 const GetSeason = require("../mal/getSeason");
 
 module.exports = {
@@ -59,8 +61,22 @@ module.exports = {
               { name: "Movies", value: "Movies" }
             )
         )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("refrense")
+        .setDescription("Get recommand anime")
+        .addStringOption((opt) =>
+          opt
+            .setName("refrense")
+            .setDescription("Anime reference")
+            .setRequired(true)
+        )
     ),
 
+  /**
+   * @param {CommandInteraction} i
+   */
   async execute(i) {
     const opt = i.options.getSubcommand();
 
@@ -96,9 +112,9 @@ module.exports = {
             value: [
               `**Original:** ${res.title}`,
               `**English:** ${res.englishTitle}`,
-              `**Japanese:** ${res.japaneseTitle}`
+              `**Japanese:** ${res.japaneseTitle}`,
             ].join("\n"),
-            inline: true
+            inline: true,
           },
           {
             name: "Episode",
@@ -109,14 +125,14 @@ module.exports = {
               `**Premiered:** ${res.premiered}`,
               `**Broadcast:** ${res.broadcast}`,
               `**Studio:** ${res.studios}`,
-              `**Status:** ${res.status}`
+              `**Status:** ${res.status}`,
             ].join("\n"),
-            inline: true
+            inline: true,
           },
           {
             name: "Producers",
             value: [res.producers.map((p) => p).join(", ")].join(""),
-            inline: true
+            inline: true,
           },
           {
             name: "Ratings",
@@ -126,9 +142,9 @@ module.exports = {
               `**Genres:** ${res.genres.map((g) => g).join(", ")}`,
               `**Ranked:** ${res.ranked}`,
               `**Fav:** ${res.favorites}`,
-              `**Popularity:** ${res.popularity}`
-            ].join("\n")
-          }
+              `**Popularity:** ${res.popularity}`,
+            ].join("\n"),
+          },
         ]);
 
       i.reply({ embeds: [embed], components: [row] });
@@ -145,7 +161,7 @@ module.exports = {
         "ONAs",
         "OVAs",
         "Specials",
-        "Movies"
+        "Movies",
       ];
       const year = i.options.getNumber("year");
       const season = i.options.getString("season");
@@ -154,14 +170,14 @@ module.exports = {
       if (!seasonList.includes(season)) {
         return i.reply({
           content: "The season is doesn't exist",
-          ephemeral: true
+          ephemeral: true,
         });
       }
 
       if (!typeList.includes(type)) {
         return i.reply({
           content: "The season type is doesn't exist",
-          ephemeral: true
+          ephemeral: true,
         });
       }
 
@@ -173,7 +189,17 @@ module.exports = {
         console.error(er.stack);
       }
     }
-  },
 
-  async TV(res) {}
+    if (opt === "refrense") {
+      const names = i.options.getString("refrense");
+
+      try {
+        const name = await Mal.getRecommendationsList(names);
+        GetRefrense.MalRefrense(name, i);
+      } catch (error) {
+        i.reply({ content: error.message, ephemeral: true });
+        console.error(error.stack);
+      }
+    }
+  },
 };

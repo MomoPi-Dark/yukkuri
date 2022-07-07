@@ -3,6 +3,7 @@ const { Routes } = require("discord-api-types/v9");
 const { Client, Intents, Collection } = require("discord.js");
 const fs = require("fs");
 const path = require("path/posix");
+require("dotenv").config();
 
 const commands = [];
 const commandFiles = fs
@@ -10,7 +11,7 @@ const commandFiles = fs
   .filter((file) => file.endsWith(".js"));
 
 // Place your client and guild ids here
-const clientId = "993694838740492348";
+const clientId = "994271965147832421";
 const guildId = "993681829796266018";
 
 for (const file of commandFiles) {
@@ -25,7 +26,7 @@ const rest = new REST({ version: "9" }).setToken(process.env.DISCORD_TOKEN);
     console.log("Started refreshing application (/) commands.");
 
     await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-      body: commands
+      body: commands,
     });
 
     console.log("Successfully reloaded application (/) commands.");
@@ -38,8 +39,8 @@ const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_PRESENCES
-  ]
+    Intents.FLAGS.GUILD_PRESENCES,
+  ],
 });
 
 client.commands = new Collection();
@@ -74,7 +75,7 @@ client.on("interactionCreate", async (i) => {
 
     await i.reply({
       content: "There is something was wrong with the comand",
-      ephemeral: true
+      ephemeral: true,
     });
   }
 });

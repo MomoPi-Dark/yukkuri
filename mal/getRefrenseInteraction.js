@@ -1,8 +1,7 @@
-const Mal = require("mal-scraper");
-const getModelAnimeName = require("./getModelAnimeName");
+const getAnimeName = require("./getModelAnimeName");
 
 module.exports = {
-  async awaitSeasonInteraction(msg, member) {
+  async awaitRefrenseInteraction(msg, member) {
     const i = await msg
       .awaitMessageComponent({
         filter: (m) => m.member.id === member.id,
@@ -16,18 +15,16 @@ module.exports = {
     i.deleteReply();
 
     try {
-      // eslint-disable-next-line
       switch (i.customId) {
-        case "tv-select": {
+        case "refrense-select": {
           const value = i.values[0];
-          const res = await Mal.getInfoFromName(value);
 
-          const animes = await getModelAnimeName.awaitModelAnime(value);
+          const animes = await getAnimeName.awaitModelAnime(value);
 
           msg.edit({
             embeds: [animes.embed],
-            content: `${res.title}`,
             components: [animes.row],
+            content: `Anime ${res.title}`,
           });
           break;
         }
