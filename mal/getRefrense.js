@@ -19,7 +19,8 @@ module.exports = {
       .addOptions(menu);
 
     const row = new MessageActionRow().addComponents([select]);
-
+ 
+    
     try {
       const msg = await i.channel.send({
         content: "Choice your anime at this menus",
@@ -37,4 +38,3 @@ module.exports = {
     }
   },
 };
-
